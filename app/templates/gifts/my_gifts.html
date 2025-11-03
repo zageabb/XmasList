@@ -23,7 +23,7 @@
       <div class="card-footer d-flex justify-content-between">
         <a class="btn btn-sm btn-outline-primary" href="{{ url_for('gifts.edit_gift', gift_id=gift.id) }}">Edit</a>
         <form method="post" action="{{ url_for('gifts.delete_gift', gift_id=gift.id) }}" onsubmit="return confirm('Delete this gift?')">
-          {{ csrf_token() }}
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
         </form>
       </div>
