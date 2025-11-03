@@ -1,0 +1,22 @@
+body {
+  background: linear-gradient(180deg, #1b4332 0%, #2d6a4f 40%, #40916c 100%);
+  color: #fff;
+  min-height: 100vh;
+}
+
+main.container {
+  background: rgba(255, 255, 255, 0.92);
+  color: #333;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  margin-bottom: 3rem;
+}
+
+.card {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.navbar-brand {
+  font-weight: 700;
+}
