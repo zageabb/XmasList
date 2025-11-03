@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}{{ user.name }}'s Gifts | GiftList{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1>{{ user.name }}'s Gift List</h1>
+  {% if current_user.id != user.id %}
+  <a class="btn btn-outline-secondary" href="{{ url_for('users.list_users') }}">Back to users</a>
+  {% endif %}
+</div>
+<div class="row">
+  {% for gift in gifts %}
+  <div class="col-md-6 col-lg-4 mb-4">
+    <div class="card h-100">
+      {% if gift.image_url %}
+      <img src="{{ gift.image_url }}" class="card-img-top" alt="{{ gift.title }}">
+      {% elif gift.image_path %}
+      <img src="{{ url_for('gifts.uploaded_file', filename=gift.image_path) }}" class="card-img-top" alt="{{ gift.title }}">
+      {% endif %}
+      <div class="card-body">
+        <h5 class="card-title">{{ gift.title }}</h5>
+        {% if gift.description %}<p class="card-text">{{ gift.description }}</p>{% endif %}
+        {% if gift.price %}<p class="fw-bold">${{ '%.2f' | format(gift.price) }}</p>{% endif %}
+        {% if gift.notes %}<p class="text-muted">{{ gift.notes }}</p>{% endif %}
+        {% if gift.url %}<a href="{{ gift.url }}" target="_blank" class="btn btn-outline-secondary btn-sm">View product</a>{% endif %}
+      </div>
+      {% if show_purchases %}
+      <div class="card-footer">
+        {% if gift.purchase %}
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="badge bg-success">Purchased{% if gift.purchase.buyer_id == current_user.id %} by you{% endif %}</span>
+            {% if gift.purchase.buyer_id == current_user.id %}
+            <form method="post" action="{{ url_for('purchases.unpurchase_gift', gift_id=gift.id) }}">
+              {{ csrf_token() }}
+              <button class="btn btn-sm btn-outline-danger">Undo</button>
+            </form>
+            {% endif %}
+          </div>
+        {% else %}
+          <form method="post" action="{{ url_for('purchases.purchase_gift', gift_id=gift.id) }}">
+            {{ csrf_token() }}
+            <button class="btn btn-sm btn-success" type="submit">Mark as Purchased</button>
+          </form>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% else %}
+  <div class="col-12">
+    <div class="alert alert-info">No gifts found.</div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

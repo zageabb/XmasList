@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Users | GiftList{% endblock %}
+{% block content %}
+<h1>All Users</h1>
+<form class="row g-2 mb-3">
+  <div class="col-md-6">
+    <input type="text" class="form-control" name="q" placeholder="Search users" value="{{ query }}">
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-outline-secondary" type="submit">Search</button>
+  </div>
+</form>
+<div class="list-group">
+  {% for user in users %}
+  <a class="list-group-item list-group-item-action" href="{{ url_for('users.user_gifts', username=user.username) }}">
+    <div class="d-flex justify-content-between">
+      <span>{{ user.name }} <small class="text-muted">({{ user.email }})</small></span>
+      <span class="badge bg-success">{{ user.gifts|length }} gifts</span>
+    </div>
+  </a>
+  {% else %}
+  <div class="alert alert-info">No users found.</div>
+  {% endfor %}
+</div>
+{% endblock %}

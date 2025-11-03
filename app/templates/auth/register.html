@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import render_field %}
+{% block title %}Register | GiftList{% endblock %}
+{% block content %}
+<h1>Register</h1>
+<form method="post" novalidate>
+  {{ form.hidden_tag() }}
+  {{ render_field(form.name) }}
+  {{ render_field(form.email) }}
+  {{ render_field(form.password) }}
+  {{ render_field(form.confirm) }}
+  {{ form.submit(class_='btn btn-success') }}
+</form>
+{% endblock %}

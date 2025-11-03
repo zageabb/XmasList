@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Purchased by Me | GiftList{% endblock %}
+{% block content %}
+<h1>Purchased by Me</h1>
+<p class="text-muted">These are the gifts you've purchased for others.</p>
+<div class="list-group">
+  {% for purchase in purchases %}
+  <div class="list-group-item">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h5 class="mb-1">{{ purchase.gift.title }}</h5>
+        <p class="mb-1 text-muted">For {{ purchase.gift.owner.name }} ({{ purchase.gift.owner.email }})</p>
+        {% if purchase.gift.url %}<a href="{{ purchase.gift.url }}" target="_blank">Product link</a>{% endif %}
+      </div>
+      <small class="text-muted">Purchased {{ purchase.purchased_at.strftime('%b %d, %Y %H:%M') }}</small>
+    </div>
+  </div>
+  {% else %}
+  <div class="alert alert-info">You haven't purchased any gifts yet.</div>
+  {% endfor %}
+</div>
+{% endblock %}

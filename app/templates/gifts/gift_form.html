@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import render_field %}
+{% block title %}{{ 'Edit' if gift else 'Create' }} Gift | GiftList{% endblock %}
+{% block content %}
+<h1>{{ 'Edit' if gift else 'Create' }} Gift</h1>
+<form method="post" enctype="multipart/form-data" novalidate>
+  {{ form.hidden_tag() }}
+  {{ render_field(form.title) }}
+  {{ render_field(form.description) }}
+  {{ render_field(form.url) }}
+  {{ render_field(form.image_url) }}
+  <div class="mb-3">
+    {{ form.image_file.label(class_='form-label') }}
+    {{ form.image_file(class_='form-control') }}
+    {% if form.image_file.errors %}<div class="text-danger small">{{ form.image_file.errors|join(', ') }}</div>{% endif %}
+  </div>
+  {{ render_field(form.price) }}
+  {{ render_field(form.notes) }}
+  {{ form.submit(class_='btn btn-success') }}
+  <a href="{{ url_for('gifts.my_gifts') }}" class="btn btn-link">Cancel</a>
+</form>
+{% endblock %}

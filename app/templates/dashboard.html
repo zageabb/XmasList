@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard | GiftList{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1>Your Dashboard</h1>
+  <a class="btn btn-primary" href="{{ url_for('gifts.create_gift') }}">Add Gift</a>
+</div>
+<p class="text-muted">Quick overview of your gift list.</p>
+<div class="row">
+  {% for gift in gifts %}
+  <div class="col-md-4 mb-3">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">{{ gift.title }}</h5>
+        {% if gift.description %}<p class="card-text">{{ gift.description }}</p>{% endif %}
+        {% if gift.url %}<a href="{{ gift.url }}" target="_blank" class="card-link">View product</a>{% endif %}
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="col-12">
+    <div class="alert alert-info">No gifts yet. <a href="{{ url_for('gifts.create_gift') }}">Add your first gift.</a></div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
