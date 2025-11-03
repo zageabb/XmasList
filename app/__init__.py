@@ -29,6 +29,7 @@ def create_app(config_name: str | None = None) -> Flask:
     register_blueprints(app)
     register_shellcontext(app)
     register_cli(app)
+    initialize_database(app)
 
     @app.route("/")
     def index():
@@ -73,6 +74,13 @@ def register_cli(app: Flask) -> None:
     @with_appcontext
     def seed() -> None:
         seed_demo_data()
+
+
+def initialize_database(app: Flask) -> None:
+    """Ensure that the database schema exists before handling requests."""
+
+    with app.app_context():
+        db.create_all()
 
 
 __all__ = ["create_app", "db"]
