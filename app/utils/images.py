@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import mimetypes
 import secrets
+from html.parser import HTMLParser
 from pathlib import Path
+from urllib.parse import urljoin
 
 import requests
 from flask import current_app
@@ -63,3 +65,61 @@ def _validate_image(path: Path) -> None:
     except Exception as exc:  # pragma: no cover - safety net
         path.unlink(missing_ok=True)
         raise ValueError("Invalid image file") from exc
+
+
+class _ImageMetaParser(HTMLParser):
+    CANDIDATE_KEYS = {
+        "og:image",
+        "og:image:url",
+        "og:image:secure_url",
+        "twitter:image",
+        "twitter:image:src",
+        "twitter:image:url",
+        "itemprop:image",
+    }
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.image_url: str | None = None
+
+    def handle_starttag(self, tag: str, attrs):  # type: ignore[override]
+        if tag.lower() != "meta" or self.image_url:
+            return
+        attr_map = {name.lower(): value for name, value in attrs if value}
+        key = (attr_map.get("property") or attr_map.get("name") or "").lower()
+        if key in self.CANDIDATE_KEYS:
+            content = attr_map.get("content") or ""
+            if content.strip():
+                self.image_url = content.strip()
+
+
+def infer_image_url(page_url: str) -> str | None:
+    """Try to infer an image URL from the HTML metadata of ``page_url``."""
+
+    if not page_url:
+        return None
+    try:
+        resp = requests.get(
+            page_url,
+            timeout=5,
+            headers={"User-Agent": "GiftListBot/1.0 (+https://example.com)"},
+        )
+        resp.raise_for_status()
+    except requests.RequestException:
+        return None
+
+    content_type = resp.headers.get("Content-Type", "").lower()
+    if "html" not in content_type:
+        return None
+
+    parser = _ImageMetaParser()
+    try:
+        parser.feed(resp.text)
+        parser.close()
+    except Exception:
+        return None
+
+    if not parser.image_url:
+        return None
+
+    return urljoin(resp.url, parser.image_url)
