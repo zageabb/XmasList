@@ -30,14 +30,14 @@
             <span class="badge bg-success">Purchased{% if gift.purchase.buyer_id == current_user.id %} by you{% endif %}</span>
             {% if gift.purchase.buyer_id == current_user.id %}
             <form method="post" action="{{ url_for('purchases.unpurchase_gift', gift_id=gift.id) }}">
-              {{ csrf_token() }}
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <button class="btn btn-sm btn-outline-danger">Undo</button>
             </form>
             {% endif %}
           </div>
         {% else %}
           <form method="post" action="{{ url_for('purchases.purchase_gift', gift_id=gift.id) }}">
-            {{ csrf_token() }}
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button class="btn btn-sm btn-success" type="submit">Mark as Purchased</button>
           </form>
         {% endif %}
