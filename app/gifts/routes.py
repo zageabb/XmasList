@@ -9,7 +9,7 @@ from flask_login import current_user, login_required
 
 from ..extensions import db
 from ..models import Gift
-from ..utils.images import fetch_image, save_upload
+from ..utils.images import fetch_image, infer_image_url, save_upload
 from .forms import GiftForm
 
 
@@ -44,12 +44,18 @@ def create_gift():
             price=Decimal(str(form.price.data)) if form.price.data is not None else None,
             notes=form.notes.data,
         )
+        image_uploaded = False
         if form.image_file.data:
             try:
                 gift.image_path = save_upload(form.image_file.data)
+                image_uploaded = True
             except ValueError as exc:
                 flash(str(exc), "danger")
                 return render_template("gifts/gift_form.html", form=form, gift=None)
+        if not image_uploaded and not gift.image_url and gift.url:
+            inferred = infer_image_url(gift.url)
+            if inferred:
+                gift.image_url = inferred
         db.session.add(gift)
         db.session.commit()
         flash("Gift created", "success")
@@ -72,12 +78,18 @@ def edit_gift(gift_id: int):
         gift.image_url = form.image_url.data
         gift.price = Decimal(str(form.price.data)) if form.price.data is not None else None
         gift.notes = form.notes.data
+        image_uploaded = False
         if form.image_file.data:
             try:
                 gift.image_path = save_upload(form.image_file.data)
+                image_uploaded = True
             except ValueError as exc:
                 flash(str(exc), "danger")
                 return render_template("gifts/gift_form.html", form=form, gift=gift)
+        if not image_uploaded and not gift.image_url and not gift.image_path and gift.url:
+            inferred = infer_image_url(gift.url)
+            if inferred:
+                gift.image_url = inferred
         db.session.commit()
         flash("Gift updated", "success")
         return redirect(url_for("gifts.my_gifts"))
