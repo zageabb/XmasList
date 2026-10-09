@@ -4,6 +4,7 @@ import os
 from typing import Dict
 
 from flask import Flask, redirect, render_template, url_for
+from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_login import current_user
 from flask.cli import with_appcontext
 
@@ -19,6 +20,8 @@ CONFIG_MAPPING: Dict[str, str] = {
 
 def create_app(config_name: str | None = None) -> Flask:
     app = Flask(__name__, instance_relative_config=False)
+    # Trust UDA/Caddy as one isolated forwarding hop only.
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1, x_prefix=1)
 
     if not config_name:
         config_name = os.getenv("FLASK_ENV", "development")
