@@ -3,6 +3,9 @@
 ## OPS-UDA-001 — UDA subpath migration
 Status: IN PROGRESS
 
+The test dependency is aligned with Flask 3 so the UDA regression suite can
+run on the deployment runtime before publication.
+
 GiftList uses trusted one-hop forwarded-prefix routing to generate navigation/static URLs within UDA's application mount. Existing gift permissions, CSRF and LAN root routes remain unchanged; smoke test runs on isolated in-memory SQLite. Backend ingress must be proxy-restricted; public access unchanged.
 
 - [ ] CI green and merged to main
