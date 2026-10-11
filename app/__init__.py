@@ -21,7 +21,10 @@ CONFIG_MAPPING: Dict[str, str] = {
 def create_app(config_name: str | None = None) -> Flask:
     app = Flask(__name__, instance_relative_config=False)
     # Trust UDA/Caddy as one isolated forwarding hop only.
-    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1, x_prefix=1)
+    # Preserve REMOTE_ADDR so identity headers can be accepted only from the
+    # actual loopback Caddy connection. The public client IP is not an auth
+    # boundary and must not replace the proxy socket address here.
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=0, x_proto=1, x_host=1, x_prefix=1)
 
     if not config_name:
         config_name = os.getenv("FLASK_ENV", "development")

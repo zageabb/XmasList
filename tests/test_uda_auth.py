@@ -26,6 +26,16 @@ def test_direct_client_cannot_spoof_uda_identity(app, client):
         assert User.query.filter_by(email="proxy.user@example.com").first() is None
 
 
+def test_forwarded_client_ip_does_not_hide_trusted_proxy_socket(app, client):
+    enable_uda(app)
+    response = client.get(
+        "/",
+        headers={**UDA_HEADERS, "X-Forwarded-For": "203.0.113.25"},
+        environ_base={"REMOTE_ADDR": "127.0.0.1"},
+    )
+    assert response.status_code == 302
+
+
 def test_alias_maps_proxy_identity_to_existing_user(app, client):
     enable_uda(app)
     with app.app_context():
