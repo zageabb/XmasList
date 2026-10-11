@@ -1,3 +1,4 @@
+import json
 import os
 from pathlib import Path
 
@@ -25,6 +26,12 @@ class BaseConfig:
     ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
     RATELIMIT_AUTH = int(os.getenv("RATELIMIT_AUTH", 5))
     RATELIMIT_WINDOW_SECONDS = int(os.getenv("RATELIMIT_WINDOW_SECONDS", 60))
+    UDA_AUTH_ENABLED = os.getenv("UDA_AUTH_ENABLED", "false").lower() in {"1", "true", "yes"}
+    UDA_REQUIRED_GROUP = os.getenv("UDA_REQUIRED_GROUP", "Development")
+    UDA_TRUSTED_PROXY_IPS = {
+        value.strip() for value in os.getenv("UDA_TRUSTED_PROXY_IPS", "127.0.0.1,::1").split(",") if value.strip()
+    }
+    UDA_USER_ALIASES = json.loads(os.getenv("UDA_USER_ALIASES", "{}"))
 
 
 class DevelopmentConfig(BaseConfig):

@@ -29,6 +29,7 @@ def create_app(config_name: str | None = None) -> Flask:
     app.config.from_object(config_path)
 
     register_extensions(app)
+    register_uda_auth(app)
     register_blueprints(app)
     register_shellcontext(app)
     register_cli(app)
@@ -41,6 +42,12 @@ def create_app(config_name: str | None = None) -> Flask:
         return render_template("index.html")
 
     return app
+
+
+def register_uda_auth(app: Flask) -> None:
+    from .uda_auth import authenticate_uda_request
+
+    app.before_request(authenticate_uda_request)
 
 
 def register_extensions(app: Flask) -> None:

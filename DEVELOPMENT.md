@@ -6,6 +6,9 @@ Status: IN PROGRESS
 The test dependency is aligned with Flask 3 so the UDA regression suite can
 run on the deployment runtime before publication.
 
+UDA identity handoff supports automatic sign-in and first-use provisioning,
+with loopback-only header trust and optional aliases for existing GiftList users.
+
 GiftList uses trusted one-hop forwarded-prefix routing to generate navigation/static URLs within UDA's application mount. Existing gift permissions, CSRF and LAN root routes remain unchanged; smoke test runs on isolated in-memory SQLite. Backend ingress must be proxy-restricted; public access unchanged.
 
 - [ ] CI green and merged to main
