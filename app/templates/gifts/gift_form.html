@@ -2,7 +2,7 @@
 {% from 'macros.html' import render_field %}
 {% block title %}{{ 'Edit' if gift else 'Create' }} Gift | GiftList{% endblock %}
 {% block content %}
-<h1>{{ 'Edit' if gift else 'Create' }} Gift</h1>
+<h1 class="mb-3">{{ 'Edit' if gift else 'Add' }} Gift</h1>
 <form method="post" enctype="multipart/form-data" novalidate>
   {{ form.hidden_tag() }}
   {{ render_field(form.title) }}
@@ -11,12 +11,15 @@
   {{ render_field(form.image_url) }}
   <div class="mb-3">
     {{ form.image_file.label(class_='form-label') }}
-    {{ form.image_file(class_='form-control') }}
+    {{ form.image_file(class_='form-control', accept='image/*') }}
+    <div class="form-text">On your phone, you can take a new photo or choose an existing image (up to 2 MB by default).</div>
     {% if form.image_file.errors %}<div class="text-danger small">{{ form.image_file.errors|join(', ') }}</div>{% endif %}
   </div>
   {{ render_field(form.price) }}
   {{ render_field(form.notes) }}
-  {{ form.submit(class_='btn btn-success') }}
-  <a href="{{ url_for('gifts.my_gifts') }}" class="btn btn-link">Cancel</a>
+  <div class="gift-form-actions">
+    {{ form.submit(class_='btn btn-success') }}
+    <a href="{{ url_for('gifts.my_gifts') }}" class="btn btn-outline-secondary">Cancel</a>
+  </div>
 </form>
 {% endblock %}
