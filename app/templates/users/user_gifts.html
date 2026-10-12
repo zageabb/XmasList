@@ -12,14 +12,14 @@
   <div class="col-md-6 col-lg-4 mb-4">
     <div class="card h-100">
       {% if gift.image_url %}
-      <img src="{{ gift.image_url }}" class="card-img-top" alt="{{ gift.title }}">
+      <img src="{{ gift.image_url }}" class="card-img-top gift-image" loading="lazy" alt="{{ gift.title }}">
       {% elif gift.image_path %}
-      <img src="{{ url_for('gifts.uploaded_file', filename=gift.image_path) }}" class="card-img-top" alt="{{ gift.title }}">
+      <img src="{{ url_for('gifts.uploaded_file', filename=gift.image_path) }}" class="card-img-top gift-image" loading="lazy" alt="{{ gift.title }}">
       {% endif %}
       <div class="card-body">
         <h5 class="card-title">{{ gift.title }}</h5>
         {% if gift.description %}<p class="card-text">{{ gift.description }}</p>{% endif %}
-        {% if gift.price %}<p class="fw-bold">${{ '%.2f' | format(gift.price) }}</p>{% endif %}
+        {% if gift.price %}<p class="fw-bold">£{{ '%.2f' | format(gift.price) }}</p>{% endif %}
         {% if gift.notes %}<p class="text-muted">{{ gift.notes }}</p>{% endif %}
         {% if gift.url %}<a href="{{ gift.url }}" target="_blank" class="btn btn-outline-secondary btn-sm">View product</a>{% endif %}
       </div>
