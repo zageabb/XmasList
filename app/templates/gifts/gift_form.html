@@ -10,9 +10,10 @@
   {{ render_field(form.url) }}
   {{ render_field(form.image_url) }}
   <div class="mb-3">
-    {{ form.image_file.label(class_='form-label') }}
-    {{ form.image_file(class_='form-control', accept='image/*') }}
-    <div class="form-text">On your phone, you can take a new photo or choose an existing image (up to 2 MB by default).</div>
+    <label class="form-label" for="image_file">Gift photo</label>
+    {{ form.image_file(class_='form-control', accept='image/*', **{'aria-describedby': 'photo-help'}) }}
+    <div id="photo-help" class="form-text">Choose an existing photo, or use your phone's camera when offered. Maximum 2 MB by default.</div>
+    <img id="gift-image-preview" class="gift-upload-preview mt-2 d-none" alt="Selected gift photo preview">
     {% if form.image_file.errors %}<div class="text-danger small">{{ form.image_file.errors|join(', ') }}</div>{% endif %}
   </div>
   {{ render_field(form.price) }}
@@ -22,4 +23,27 @@
     <a href="{{ url_for('gifts.my_gifts') }}" class="btn btn-outline-secondary">Cancel</a>
   </div>
 </form>
+<script>
+(() => {
+  const input = document.getElementById('image_file');
+  const preview = document.getElementById('gift-image-preview');
+  if (!input || !preview) return;
+  let previousUrl = null;
+  input.addEventListener('change', () => {
+    if (previousUrl) URL.revokeObjectURL(previousUrl);
+    previousUrl = null;
+    const file = input.files && input.files[0];
+    preview.classList.add('d-none');
+    preview.removeAttribute('src');
+    if (file && file.type.startsWith('image/')) {
+      previousUrl = URL.createObjectURL(file);
+      preview.src = previousUrl;
+      preview.classList.remove('d-none');
+    }
+  });
+  window.addEventListener('pagehide', () => {
+    if (previousUrl) URL.revokeObjectURL(previousUrl);
+  });
+})();
+</script>
 {% endblock %}
