@@ -28,3 +28,14 @@ Status: not implemented. Do not assume that purchase-status hiding is fully invi
 - [ ] Specify data ownership and authorisation boundaries
 - [ ] Implement filtering across list, count, search, exports, notifications and attachments
 - [ ] Add privacy-negative tests for unauthorised identities
+
+## AUTH-PROXY-002 — Reverse-proxy identity only
+Status: committed, CI/live validation pending.
+
+When UDA_AUTH_ENABLED=true, require a trusted proxy IP, X-UDA-User email, and the configured X-UDA-Groups membership on **every request**. Existing app sessions cannot override failed identity checks. Legacy app login/register/logout/password-reset routes are disabled in proxy mode and the logout link is hidden. The local standalone login mode remains available only when UDA_AUTH_ENABLED=false.
+
+Deployment: set UDA_AUTH_ENABLED=true, UDA_REQUIRED_GROUP to the relevant permitted UDA group, UDA_TRUSTED_PROXY_IPS to the real proxy socket address(es), and optionally UDA_USER_ALIASES to map proxy email to pre-existing GiftList user email and avoid duplicate lists. Restrict the application listener to loopback/firewall; ensure Caddy *overwrites* identity headers and never forwards client-supplied X-UDA-* headers. If these headers are not supplied, access fails closed with HTTP 403.
+
+- [ ] Verify live proxy header forwarding, permitted group and firewall/listener
+- [ ] Verify identities and access separation for each user on mobile and desktop
+- [ ] Check removal of proxy access immediately blocks existing sessions
