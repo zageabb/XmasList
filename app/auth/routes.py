@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.exceptions import TooManyRequests
 
@@ -15,6 +15,8 @@ auth_bp = Blueprint("auth", __name__, template_folder="../templates/auth")
 @auth_bp.route("/register", methods=["GET", "POST"])
 @limit_auth_route
 def register():
+    if current_app.config.get("UDA_AUTH_ENABLED"):
+        abort(404)  # Authentication is managed by the reverse proxy.
     if current_user.is_authenticated:
         return redirect(url_for("gifts.my_gifts"))
     form = RegistrationForm()
@@ -32,6 +34,8 @@ def register():
 @auth_bp.route("/login", methods=["GET", "POST"])
 @limit_auth_route
 def login():
+    if current_app.config.get("UDA_AUTH_ENABLED"):
+        abort(404)  # Authentication is managed by the reverse proxy.
     if current_user.is_authenticated:
         return redirect(url_for("gifts.my_gifts"))
     form = LoginForm()
@@ -51,6 +55,8 @@ def login():
 @auth_bp.route("/logout")
 @login_required
 def logout():
+    if current_app.config.get("UDA_AUTH_ENABLED"):
+        abort(404)  # Authentication is managed by the reverse proxy.
     logout_user()
     flash("You have been logged out", "info")
     return redirect(url_for("auth.login"))
@@ -59,6 +65,8 @@ def logout():
 @auth_bp.route("/password-reset", methods=["GET", "POST"])
 @limit_auth_route
 def password_reset_request():
+    if current_app.config.get("UDA_AUTH_ENABLED"):
+        abort(404)  # Authentication is managed by the reverse proxy.
     form = PasswordResetRequestForm()
     if form.validate_on_submit():
         flash("Password reset functionality is not implemented yet.", "info")
