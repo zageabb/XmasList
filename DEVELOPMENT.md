@@ -39,3 +39,14 @@ Deployment: set UDA_AUTH_ENABLED=true, UDA_REQUIRED_GROUP to the relevant permit
 - [ ] Verify live proxy header forwarding, permitted group and firewall/listener
 - [ ] Verify identities and access separation for each user on mobile and desktop
 - [ ] Check removal of proxy access immediately blocks existing sessions
+
+## QA-MOBILE-002 — Mobile and proxy regression coverage
+Status: implementation committed; CI and real-device validation pending.
+
+- [x] Expand GitHub Actions from the subpath smoke test to the entire pytest suite
+- [x] Add authenticated mobile navigation and form-markup tests
+- [x] Add authenticated UDA prefix mobile-link test
+- [x] Add local image preview on gift form (no image sent until form submission)
+- [ ] Android Chrome / iOS Safari browser verification
+- [ ] Live proxy login and photo upload acceptance test
+- [ ] Run visual viewport tests at 320, 375 and 430 pixels
