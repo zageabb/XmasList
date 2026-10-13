@@ -21,7 +21,7 @@ def test_trusted_proxy_identity_creates_and_signs_in_user(app, client):
 def test_direct_client_cannot_spoof_uda_identity(app, client):
     enable_uda(app)
     response = client.get("/", headers=UDA_HEADERS, environ_base={"REMOTE_ADDR": "192.168.1.50"})
-    assert response.status_code == 200
+    assert response.status_code == 403
     with app.app_context():
         assert User.query.filter_by(email="proxy.user@example.com").first() is None
 
@@ -61,4 +61,20 @@ def test_required_group_is_enforced(app, client):
         headers={"X-UDA-User": "proxy.user@example.com", "X-UDA-Groups": "Personal"},
         environ_base={"REMOTE_ADDR": "127.0.0.1"},
     )
-    assert response.status_code == 200
+    assert response.status_code == 403
+
+
+def test_proxy_mode_rejects_missing_identity_even_with_existing_session(app, client):
+    enable_uda(app)
+    trusted = {"REMOTE_ADDR": "127.0.0.1"}
+    assert client.get("/", headers=UDA_HEADERS, environ_base=trusted).status_code == 302
+    assert client.get("/", environ_base=trusted).status_code == 403
+    assert client.get("/", headers=UDA_HEADERS, environ_base=trusted).status_code == 302
+
+
+def test_proxy_mode_blocks_application_login_and_registration(app, client):
+    enable_uda(app)
+    trusted = {"REMOTE_ADDR": "127.0.0.1"}
+    for route in ("/login", "/register", "/logout", "/password-reset"):
+        response = client.get(route, headers=UDA_HEADERS, environ_base=trusted)
+        assert response.status_code == 404
