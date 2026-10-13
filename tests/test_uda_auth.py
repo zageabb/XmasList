@@ -64,6 +64,13 @@ def test_required_group_is_enforced(app, client):
     assert response.status_code == 403
 
 
+def test_health_check_does_not_require_proxy_identity(app, client):
+    enable_uda(app)
+    response = client.get("/health", environ_base={"REMOTE_ADDR": "127.0.0.1"})
+    assert response.status_code == 200
+    assert response.get_json() == {"status": "ok"}
+
+
 def test_proxy_mode_rejects_missing_identity_even_with_existing_session(app, client):
     enable_uda(app)
     trusted = {"REMOTE_ADDR": "127.0.0.1"}

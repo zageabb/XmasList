@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from typing import Dict
 
-from flask import Flask, redirect, render_template, url_for
+from flask import Flask, jsonify, redirect, render_template, url_for
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_login import current_user
 from flask.cli import with_appcontext
@@ -43,6 +43,11 @@ def create_app(config_name: str | None = None) -> Flask:
         if current_user.is_authenticated:
             return redirect(url_for("gifts.dashboard"))
         return render_template("index.html")
+
+    @app.get("/health")
+    def health():
+        """Report process health without requiring an end-user identity."""
+        return jsonify(status="ok")
 
     return app
 

@@ -17,6 +17,8 @@ def authenticate_uda_request() -> None:
     g.uda_authenticated = False
     if not current_app.config.get("UDA_AUTH_ENABLED"):
         return
+    if request.endpoint == "health":
+        return
 
     trusted = request.remote_addr in current_app.config["UDA_TRUSTED_PROXY_IPS"]
     asserted_email = (request.headers.get("X-UDA-User") or "").strip().casefold()
