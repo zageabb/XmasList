@@ -1,0 +1,37 @@
+schema_version: 1
+application:
+  name: xmas-list
+  display_name: Xmas List
+  group: Open
+source:
+  branch: main
+runtime:
+  type: python
+  version: "3.10.12"
+  working_dir: .
+build:
+  working_dir: .
+  commands:
+    - ["python", "-m", "pip", "install", "-r", "requirements.txt"]
+service:
+  type: systemd
+  entrypoint: ["gunicorn", "--workers", "1", "--timeout", "180", "--bind", "0.0.0.0:5065", "wsgi:app"]
+  port: 5065
+  health_path: /health
+proxy:
+  enabled: true
+  path: /apps/xmas-list/
+  authentication: uda
+environment:
+  required:
+    - DATABASE_URL
+    - UDA_AUTH_ENABLED
+    - UDA_REQUIRED_GROUP
+    - UDA_TRUSTED_PROXY_IPS
+    - UDA_USER_ALIASES
+    - UPLOAD_FOLDER
+deployment:
+  auto_update: true
+  rollback: true
+  github_reporting: false
+
